@@ -39,3 +39,15 @@ pub struct SceneButton {
 pub struct ColorPulse {
     pub timer: f32,
 }
+
+// Card flip scene components
+#[derive(Component, Clone)]
+pub struct CardFlipSceneEntity;
+
+#[derive(Component)]
+pub struct Card {
+    pub is_front: bool,
+    pub is_flipping: bool,
+    pub flip_progress: f32,   // 0.0 to 1.0
+    pub image_swapped: bool,  // Track if image was swapped during this flip
+}
