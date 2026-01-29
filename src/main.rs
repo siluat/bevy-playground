@@ -7,7 +7,7 @@ mod state;
 use bevy::prelude::*;
 
 use common::CommonPlugin;
-use scenes::{SceneListPlugin, SquirrelPlugin, TestScenePlugin};
+use scenes::{CardFlipPlugin, SceneListPlugin, SquirrelPlugin, TestScenePlugin};
 use state::AppState;
 
 fn main() {
@@ -25,6 +25,6 @@ fn main() {
                 }),
         )
         .init_state::<AppState>()
-        .add_plugins((CommonPlugin, SceneListPlugin, SquirrelPlugin, TestScenePlugin))
+        .add_plugins((CommonPlugin, SceneListPlugin, SquirrelPlugin, TestScenePlugin, CardFlipPlugin))
         .run();
 }
