@@ -19,14 +19,15 @@ impl Plugin for TestScenePlugin {
     }
 }
 
-fn setup_test_scene(mut commands: Commands) {
-    // Spawn color pulse circle
+fn setup_test_scene(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
+    // Spawn color pulse circle using 2D mesh
     commands.spawn((
-        Sprite {
-            color: Color::srgb(1.0, 0.5, 0.0),
-            custom_size: Some(Vec2::new(100.0, 100.0)),
-            ..default()
-        },
+        Mesh2d(meshes.add(Circle::new(50.0))),
+        MeshMaterial2d(materials.add(ColorMaterial::from_color(Color::srgb(1.0, 0.5, 0.0)))),
         Transform::from_translation(Vec3::ZERO),
         ColorPulse { timer: 0.0 },
         TestSceneEntity,
@@ -55,8 +56,12 @@ fn setup_test_scene(mut commands: Commands) {
     spawn_back_hint(&mut commands, TestSceneEntity);
 }
 
-fn test_scene_update(time: Res<Time>, mut query: Query<(&mut Sprite, &mut ColorPulse)>) {
-    for (mut sprite, mut pulse) in &mut query {
+fn test_scene_update(
+    time: Res<Time>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+    mut query: Query<(&MeshMaterial2d<ColorMaterial>, &mut ColorPulse)>,
+) {
+    for (material_handle, mut pulse) in &mut query {
         pulse.timer += time.delta_secs();
 
         // Oscillate between orange and blue
@@ -67,6 +72,8 @@ fn test_scene_update(time: Res<Time>, mut query: Query<(&mut Sprite, &mut ColorP
         let g = 0.5;
         let b = 0.0 * (1.0 - t) + 1.0 * t;
 
-        sprite.color = Color::srgb(r, g, b);
+        if let Some(material) = materials.get_mut(&material_handle.0) {
+            material.color = Color::srgb(r, g, b);
+        }
     }
 }
