@@ -27,7 +27,9 @@ enum AppState {
 
 ### 3. Scene Transition System
 - `OnEnter(AppState::*)`: Spawn entities on scene entry
-- `DespawnOnExitState`: Automatic entity cleanup on scene exit
+- `OnExit(AppState::*)`: Run cleanup systems on scene exit
+- `cleanup<T>`: Generic function to despawn all entities with marker component `T`
+  - Alternative: Bevy 0.18's `DespawnOnExit<AppState::SceneList>` for automatic cleanup
 - `.run_if(in_state(...))`: Conditional system execution per scene
 
 ### 4. Back Navigation
@@ -53,7 +55,8 @@ enum AppState {
 
 ### Step 3: Squirrel Walking Scene Refactoring
 - [ ] Rename existing `setup()` to `setup_squirrel_scene()`
-- [ ] Add `DespawnOnExitState(AppState::SquirrelWalking)` to all entities
+- [ ] Add marker component (e.g., `SquirrelSceneEntity`) to all entities
+- [ ] Register `cleanup::<SquirrelSceneEntity>` system on `OnExit(AppState::SquirrelWalking)`
 - [ ] Apply `.run_if(in_state(...))` to `move_player`, `animate_sprite`
 
 ### Step 4: Test Scene Implementation
