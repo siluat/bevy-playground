@@ -102,6 +102,33 @@ fn setup_scene_list(mut commands: Commands) {
                         TextColor(Color::srgb(0.9, 0.9, 0.9)),
                     ));
                 });
+
+            // Card Flip button
+            parent
+                .spawn((
+                    Button,
+                    Node {
+                        width: Val::Px(250.0),
+                        height: Val::Px(65.0),
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        ..default()
+                    },
+                    BackgroundColor(NORMAL_BUTTON),
+                    SceneButton {
+                        target_state: AppState::CardFlipScene,
+                    },
+                ))
+                .with_children(|parent| {
+                    parent.spawn((
+                        Text::new("Card Flip"),
+                        TextFont {
+                            font_size: 24.0,
+                            ..default()
+                        },
+                        TextColor(Color::srgb(0.9, 0.9, 0.9)),
+                    ));
+                });
         });
 }
 

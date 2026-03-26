@@ -7,4 +7,5 @@ pub enum AppState {
     SceneList,
     SquirrelWalking,
     TestScene,
+    CardFlipScene,
 }
