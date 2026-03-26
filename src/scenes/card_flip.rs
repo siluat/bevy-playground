@@ -87,6 +87,7 @@ fn card_click_system(
     windows: Query<&Window>,
     camera_query: Query<(&Camera, &GlobalTransform)>,
     mut card_query: Query<(&Sprite, &mut Card, &Transform)>,
+    images: Res<Assets<Image>>,
 ) {
     if !mouse_button.just_pressed(MouseButton::Left) {
         return;
@@ -114,7 +115,10 @@ fn card_click_system(
             continue;
         }
 
-        let base_size = sprite.custom_size.unwrap_or(Vec2::new(64.0, 64.0));
+        let base_size = sprite
+            .custom_size
+            .or_else(|| images.get(&sprite.image).map(|img| img.size().as_vec2()))
+            .unwrap_or(Vec2::new(64.0, 64.0));
         let card_size = base_size * transform.scale.truncate();
         let half_size = card_size / 2.0;
         let card_pos = transform.translation.truncate();
@@ -145,14 +149,8 @@ fn card_flip_animation_system(
 
         card.flip_progress += time.delta_secs() / FLIP_DURATION;
 
-        if card.flip_progress >= 1.0 {
-            // Animation complete
-            card.is_flipping = false;
-            card.flip_progress = 0.0;
-            card.image_swapped = false;
-            transform.scale.x = CARD_SCALE;
-        } else if card.flip_progress >= 0.5 && !card.image_swapped {
-            // At halfway point, swap the image (only once)
+        // Handle image swap at midpoint (check before completion to avoid skipping on low FPS)
+        if card.flip_progress >= 0.5 && !card.image_swapped {
             card.is_front = !card.is_front;
             card.image_swapped = true;
             sprite.image = if card.is_front {
@@ -160,6 +158,15 @@ fn card_flip_animation_system(
             } else {
                 card_images.back.clone()
             };
+        }
+
+        if card.flip_progress >= 1.0 {
+            // Animation complete
+            card.is_flipping = false;
+            card.flip_progress = 0.0;
+            card.image_swapped = false;
+            transform.scale.x = CARD_SCALE;
+            continue;
         }
 
         // Scale X based on progress (1 -> 0 -> 1)
